@@ -1,15 +1,25 @@
 ---
 title: "Lab 8: Searching for Efficiency"
 author: "Amir Sepasian"
-format: html
 editor: source
 embed-resources: true
+format: 
+  html:  
+    embed-resources: true
+    code-tools: true
+    toc: true
+execute: 
+  echo: true
+  warning: false
+  message: false
+code-fold: true
 ---
 
 ```{r}
 #| label: pacakges
 
 library(tidyverse)
+
 ```
 
 For this week's lab, we will be revisiting questions from previous lab
@@ -44,6 +54,8 @@ each variable, with the datatype of that variable immediately below it's name.
 ```{r}
 #| label: map-data-types-of-surveys
 
+map_chr(surveys, typeof) |>
+  bind_rows()
 
 ```
 
@@ -62,6 +74,14 @@ list output back into a data frame.
 ```{r}
 #| label: map-to-mutate-columns
 
+evals |>
+  map_at(.at = c('teacher_id', 
+                 'weekday', 
+                 'academic_degree', 
+                 'seniority', 
+                'gender'),
+         .f = as.factor) |>
+  bind_cols()
 
 ```
 
@@ -88,6 +108,33 @@ I'm using the `sen_level` classification from Challenge 3
 ```{r}
 #| label: double-pivot-for-summary-table
 
+evals |>
+  mutate(seniority = ifelse(seniority <= 4, 
+                            'Junior (4 years or less)', 
+                            'Senior (more than 4 years)')) |>
+  distinct(teacher_id,
+           seniority,
+           academic_degree,
+           sex) |>
+  
+  pivot_longer(cols = seniority:sex,
+               names_to = 'lvl',
+               values_to = 'vals') |>
+  
+  count(vals) |>
+  
+  pivot_wider(names_from = vals,
+              values_from = n) |>
+  
+  select(Female = female,
+         Male = male,
+         `Junior (4 years or less)`,
+         `Senior (more than 4 years)`,
+         `No Degree` = no_dgr,
+         Masters = ma,
+         Doctorate = dr,
+         Professor = prof)
+
 
 ```
 
@@ -111,5 +158,7 @@ Question 1 asked you to use `across()` to make a table which summarized:
 ```{r}
 #| label: map-missing-values-of-fish
 
+fish |>
+  map_int(.f = ~ sum(is.na(.x)))
 
 ```
