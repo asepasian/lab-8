@@ -18,6 +18,8 @@ code-fold: true
 ```{r}
 #| label: pacakges
 
+library(kableExtra)
+library(knitr)
 library(tidyverse)
 
 ```
@@ -55,7 +57,10 @@ each variable, with the datatype of that variable immediately below it's name.
 #| label: map-data-types-of-surveys
 
 map_chr(surveys, typeof) |>
-  bind_rows()
+  bind_rows()|>
+  kable(format = 'html',
+        caption = 'Variable Data Types',
+        align = 'c')
 
 ```
 
@@ -71,6 +76,8 @@ In the original version of Lab 3, Question 5 asked you to:
 **2. Using `map_at()`, convert the `teacher_id`, `weekday`, `academic_degree`, `seniority`, and `gender` columns to factors.** Hint: You will need to use `bind_cols()` to transform the 
 list output back into a data frame. 
 
+ChatGBT Link: https://chatgpt.com/share/6747c4cd-8560-8011-a128-d02b21f0a54d
+
 ```{r}
 #| label: map-to-mutate-columns
 
@@ -81,7 +88,8 @@ evals |>
                  'seniority', 
                 'gender'),
          .f = as.factor) |>
-  bind_cols()
+  bind_cols() 
+  
 
 ```
 
@@ -104,6 +112,8 @@ I'm using the `sen_level` classification from Challenge 3
 - `"junior"` = `seniority` is 4 or less (inclusive)
 - `"senior"` = `seniority` is more than 4 
 :::
+
+ChatGBT Link: https://chatgpt.com/share/6747c4cd-8560-8011-a128-d02b21f0a54d
 
 ```{r}
 #| label: double-pivot-for-summary-table
@@ -133,7 +143,13 @@ evals |>
          `No Degree` = no_dgr,
          Masters = ma,
          Doctorate = dr,
-         Professor = prof)
+         Professor = prof) |>
+  kable(format = 'html') |>
+  kable_styling(bootstrap_options = c('condensed', 
+                                      'hover', 
+                                      'striped')
+                )
+
 
 
 ```
@@ -159,6 +175,32 @@ Question 1 asked you to use `across()` to make a table which summarized:
 #| label: map-missing-values-of-fish
 
 fish |>
-  map_int(.f = ~ sum(is.na(.x)))
+  map_int(.f = ~ sum(is.na(.x))) |>
+  kable(format = 'html',
+        caption = 'Missing Values in Aggregate') |>
+  kable_styling(bootstrap_options = c('condensed', 
+                                      'hover', 
+                                      'striped')
+                )
+  
+
+```
+
+
+
+```{r}
+#| label: map-missing-values-fish
+
+height <- function(obs = 200, mean, sd) {
+  
+  tibble(person = 1:obs, 
+         ht = rnorm(n = obs, mean = mean, sd = sd)
+  )
+  
+}
+
+
+crossing(mean_ht = seq(from = 60, to = 78, by = 6),
+         std_ht = c(3, 6))
 
 ```
